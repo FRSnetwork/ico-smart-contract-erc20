@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.22;
 
 library SafeMath {
 
@@ -55,7 +55,7 @@ contract BasicToken is ERC20Basic {
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
-    Transfer(msg.sender, _to, _value);
+    emit Transfer(msg.sender, _to, _value);
     return true;
   }
 
@@ -72,7 +72,7 @@ contract BurnableToken is BasicToken {
     address burner = msg.sender;
     balances[burner] = balances[burner].sub(_value);
     totalSupply_ = totalSupply_.sub(_value);
-    Burn(burner, _value);
+    emit Burn(burner, _value);
   }
 }
 
@@ -92,10 +92,10 @@ contract FRScoin is BurnableToken {
   uint256 public discount = 35;
   uint256 public softcap = 1000000 * (10 ** uint256(decimals));
 
-  function FRScoin() public {
+  constructor() public {
     totalSupply_ = INITIAL_SUPPLY;
     balances[msg.sender] = INITIAL_SUPPLY;
-    Transfer(0x0, msg.sender, INITIAL_SUPPLY);
+    emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
     initialHolder = msg.sender;
     state = States.Sale;
   }
@@ -141,6 +141,6 @@ contract FRScoin is BurnableToken {
     uint256 _total = _coinIncrease + _coinBonus;
     balances[initialHolder] = balances[initialHolder].sub(_total);
     balances[msg.sender] = balances[msg.sender].add(_total);
-    Transfer(initialHolder, msg.sender, _total);
+    emit Transfer(initialHolder, msg.sender, _total);
   }
 }
